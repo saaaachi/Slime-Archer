@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Slime Archer Infinite</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #f1f8e9; font-family: sans-serif; touch-action: none; }
+        #ad-top, #ad-bottom { position: fixed; left: 0; width: 100%; height: 110px; background: #333; z-index: 100; display: flex; align-items: center; justify-content: center; }
+        #ad-top { top: 0; } #ad-bottom { bottom: 0; }
+        iframe { border: none; width: 100%; height: 110px; }
+        canvas { display: block; margin-top: 110px; background: #dcedc8; }
+        #startScreen { position: absolute; top: 110px; left: 0; width: 100%; height: calc(100vh - 220px); background: rgba(255,255,255,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 50; }
+        #goButton { padding: 15px 40px; font-size: 24px; background: #689f38; border: none; border-radius: 50px; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="ad-top"><iframe id="frame-top" src="ad.html"></iframe></div>
+    <div id="ad-bottom"><iframe id="frame-bottom" src="ad.html"></iframe></div>
+    <div id="startScreen">
+        <h1 style="color:#689f38;">SLIME ARCHER</h1>
+        <p>長押しでパワーを溜めて、離して発射！</p>
+        <button id="goButton">START</button>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas"); const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight - 220;
+        let score = 0, arrows = [], targets = [], power = 0, isPressing = false, gameActive = false;
+        
+        function spawnTarget() { 
+            if(!gameActive) return;
+            targets.push({x: Math.random()*(canvas.width-30)+15, y: -20, s: 2 + (score/10)}); 
+            setTimeout(spawnTarget, Math.max(500, 1500 - (score*50))); 
+        }
+        
+        document.getElementById("goButton").onclick = () => {
+            startScreen.style.display = "none"; gameActive = true; score = 0; arrows = []; targets = []; spawnTarget(); update();
+        };
+
+        window.addEventListener("pointerdown", () => { if(gameActive) isPressing = true; });
+        window.addEventListener("pointerup", () => { if(gameActive) { arrows.push({x: canvas.width/2, y: canvas.height-20, v: power + 5}); power = 0; isPressing = false; } });
+
+        function update() {
+            if(!gameActive) return;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            if(isPressing) power = Math.min(power + 0.5, 20);
+            
+            arrows.forEach((a, i) => { a.y -= a.v; if(a.y < 0) arrows.splice(i,1); });
+            targets.forEach((t, j) => {
+                t.y += t.s;
+                ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(t.x, t.y, 15, 0, Math.PI*2); ctx.fill();
+                arrows.forEach((a, i) => { if(Math.hypot(a.x-t.x, a.y-t.y) < 20) { targets.splice(j,1); arrows.splice(i,1); score++; } });
+                if(t.y > canvas.height) location.reload();
+            });
+            ctx.fillStyle = "#33691e"; ctx.fillRect(canvas.width/2-15, canvas.height-30, 30, 30);
+            ctx.fillStyle = "black"; ctx.font = "bold 20px Arial"; ctx.fillText("SCORE: "+score, 20, 35);
+            ctx.fillStyle = "orange"; ctx.fillRect(20, 50, power*10, 10);
+            requestAnimationFrame(update);
+        }
+        setInterval(() => { ["frame-top", "frame-bottom"].forEach(id => { const f = document.getElementById(id); const s = f.src; f.src = "about:blank"; setTimeout(() => f.src = s, 100); }); }, 30000);
+    </script>
+</body>
+</html>
