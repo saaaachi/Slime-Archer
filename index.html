@@ -3,90 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Slime Archer Mobile</title>
+    <title>Slime Archer - Mobile Shoot</title>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1299640300068792" crossorigin="anonymous"></script>
     <style>
-        body { margin: 0; height: 100vh; display: flex; flex-direction: column; background: #f1f8e9; font-family: sans-serif; overflow: hidden; touch-action: none; }
-        #ad-top, #ad-bottom { width: 100%; height: 110px; background: #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 100; }
-        iframe { border: none; width: 100%; height: 100%; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; position: fixed; touch-action: none; }
+        body { background: #f1f8e9; font-family: 'Hiragino Sans', 'Meiryo', sans-serif; display: flex; flex-direction: column; color: #333; }
+        
+        /* 上部広告：100px 固定 */
+        #ad-top { width: 100%; height: 100px; background: #333; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 100; border-bottom: 2px solid #689f38; }
+
+        /* ゲームエリア */
         #game-area { flex-grow: 1; position: relative; width: 100%; background: #dcedc8; overflow: hidden; }
         canvas { display: block; width: 100%; height: 100%; }
-        #menuScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; align-items: center; justify-content: space-between; z-index: 200; padding: 10px 0; box-sizing: border-box; }
-        #ad-middle-container { width: 300px; height: 250px; background: #ddd; display: none; justify-content: center; align-items: center; overflow: hidden; flex-shrink: 0; border: 1px solid #ccc; }
-        .btn-group { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding-bottom: 5px; }
-        .menu-btn { padding: 12px 30px; font-size: 17px; border: none; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; text-decoration: none; width: 220px; text-align: center; }
-        #goButton { background: #689f38; box-shadow: 0 4px #33691e; }
-        .link-btn { background: #ff4081; box-shadow: 0 4px #c2185b; }
-        .best-info { color: #33691e; font-size: 18px; font-weight: bold; margin: 2px 0; }
+        
+        /* メニュー画面 */
+        #menuScreen { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(255,255,255,0.95); display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; z-index: 500; padding: 20px;
+        }
+
+        /* 収益の柱：レクタングル広告 */
+        #ad-middle-box {
+            width: 300px; height: 250px; background: #eee;
+            margin: 15px 0; display: none; justify-content: center; align-items: center;
+            border: 1px solid #ccc; border-radius: 10px; overflow: hidden;
+        }
+        
+        .btn-group { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 12px; }
+        .menu-btn { width: 280px; padding: 18px; font-size: 20px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; transition: 0.2s; }
+        #goButton { background: #689f38; color: white; box-shadow: 0 5px #33691e; }
+        #goButton:disabled { background: #bbb; box-shadow: none; color: #777; }
+        .sub-btn { background: #ff4081; color: white; box-shadow: 0 5px #c2185b; font-size: 16px; }
+
+        /* インタースティシャル画面 */
+        #inter-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 99999; align-items: center; justify-content: center; }
+        .inter-content { width: 330px; height: 350px; background: #fff; position: relative; border-radius: 15px; }
+        #close-ad-btn { position: absolute; top: -55px; right: 0; width: 45px; height: 45px; background: #333; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #fff; cursor: pointer; }
     </style>
 </head>
-<body>
-    <div id="ad-top"><iframe src="ad.html"></iframe></div>
+<body oncontextmenu="return false;">
+
+    <div id="ad-top">
+        <ins class="adsbygoogle" style="display:inline-block;width:320px;height:100px" data-ad-client="ca-pub-1299640300068792" data-ad-slot="3972022911"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
     <div id="game-area">
         <div id="menuScreen">
             <div style="text-align:center;">
-                <h1 id="menuTitle" style="color:#689f38; margin:0; font-size: 24px;">SLIME ARCHER</h1>
-                <p id="menuMsg" style="margin:2px 0; font-size:14px;">左右移動＆長押しで発射！</p>
-                <div class="best-info">BEST SCORE: <span id="best-ui">0</span></div>
+                <h1 id="menuTitle" style="color:#689f38; margin:0; font-size: 32px; font-style: italic;">SLIME ARCHER</h1>
+                <p id="menuMsg" style="margin:5px 0; color: #33691e;">スライドで移動・離して発射！</p>
+                <div style="color: #689f38; font-size: 22px; font-weight: bold; margin: 5px 0;">BEST: <span id="best-ui">0</span></div>
             </div>
-            <div id="ad-middle-container">
-                <script src="https://adm.shinobi.jp/s/1e6de436ea850948e238e975a93767eb"></script>
+
+            <div id="ad-middle-box">
+                <ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-1299640300068792" data-ad-slot="9050127185"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             </div>
-            <div class="btn-group" id="btnGroup">
-                <button id="goButton" class="menu-btn">GAME START</button>
-                <a href="https://saaaachi.github.io/Breakout-slime/" class="menu-btn link-btn">他のゲームはこちら</a>
+
+            <div class="btn-group">
+                <button id="goButton" class="menu-btn" onclick="startGame()">GAME START</button>
+                <a href="https://saaaachi.github.io/" class="sub-btn menu-btn">他のゲームで遊ぶ</a>
             </div>
         </div>
         <canvas id="gameCanvas"></canvas>
+
+        <div id="inter-screen">
+            <div class="inter-content">
+                <div id="close-ad-btn" onclick="closeInterAd()">5</div>
+                <iframe id="ifr-inter" src="about:blank" style="width:100%; height:100%; border:none; border-radius:15px; background:#fff;"></iframe>
+            </div>
+        </div>
     </div>
-    <div id="ad-bottom"><iframe src="ad.html"></iframe></div>
+
     <script>
         const canvas = document.getElementById("gameCanvas"), ctx = canvas.getContext("2d"),
-              menuScreen = document.getElementById("menuScreen"), menuTitle = document.getElementById("menuTitle"),
-              menuMsg = document.getElementById("menuMsg"), bestUi = document.getElementById("best-ui"),
-              goButton = document.getElementById("goButton"), adMid = document.getElementById("ad-middle-container"),
-              btnGroup = document.getElementById("btnGroup");
-        let score = 0, bestScore = localStorage.getItem("slime_archer_best") || 0, arrows = [], targets = [], power = 0, isPressing = false, gameActive = false, playerX = 0, targetSpawnTimer;
-        function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; playerX = canvas.width / 2; }
+              menuScreen = document.getElementById("menuScreen"), 
+              menuTitle = document.getElementById("menuTitle"),
+              menuMsg = document.getElementById("menuMsg"), 
+              bestUi = document.getElementById("best-ui"),
+              goButton = document.getElementById("goButton"), 
+              adMid = document.getElementById("ad-middle-box");
+
+        let score = 0, bestScore = localStorage.getItem("slime_archer_best") || 0, playCount = 0;
+        let arrows = [], targets = [], power = 0, isPressing = false, gameActive = false;
+        let playerX = 0, targetSpawnTimer;
+
+        function resize() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            playerX = canvas.width / 2;
+        }
         window.onload = () => { resize(); bestUi.innerText = bestScore; adMid.style.display = "none"; };
         window.onresize = resize;
+
         function spawnTarget() { 
             if(!gameActive) return;
-            targets.push({x: Math.random()*(canvas.width-40)+20, y: -20, s: 1.5 + (score/20)}); 
-            targetSpawnTimer = setTimeout(spawnTarget, Math.max(600, 1800 - (score*50))); 
+            targets.push({
+                x: Math.random() * (canvas.width - 60) + 30, 
+                y: -30, 
+                s: 2 + (score / 25), // スコアに応じて速度アップ
+                r: 22
+            }); 
+            const delay = Math.max(500, 1500 - (score * 40));
+            targetSpawnTimer = setTimeout(spawnTarget, delay); 
         }
-        goButton.onclick = () => { menuScreen.style.display = "none"; adMid.style.display = "none"; gameActive = true; score = 0; arrows = []; targets = []; power = 0; spawnTarget(); update(); };
-        window.addEventListener("touchstart", (e) => { if(gameActive) { isPressing = true; playerX = e.touches[0].clientX; } });
-        window.addEventListener("touchmove", (e) => { if(gameActive) { playerX = e.touches[0].clientX; e.preventDefault(); } }, {passive: false});
-        window.addEventListener("touchend", () => { if(gameActive && isPressing) { arrows.push({x: playerX, y: canvas.height-30, v: power + 7}); power = 0; isPressing = false; } });
+
+        function startGame() { 
+            menuScreen.style.display = "none"; 
+            adMid.style.display = "none"; 
+            gameActive = true; 
+            score = 0; arrows = []; targets = []; power = 0; 
+            spawnTarget(); 
+            update(); 
+        }
+
+        // タッチ操作の改善
+        window.addEventListener("touchstart", (e) => { 
+            if(gameActive && menuScreen.style.display === "none") { 
+                isPressing = true; 
+                playerX = e.touches[0].clientX; 
+            } 
+        });
+        window.addEventListener("touchmove", (e) => { 
+            if(gameActive) { 
+                playerX = e.touches[0].clientX; 
+                e.preventDefault(); 
+            } 
+        }, {passive: false});
+        window.addEventListener("touchend", () => { 
+            if(gameActive && isPressing) { 
+                // 矢を発射。最低速度を保証
+                arrows.push({x: playerX, y: canvas.height - 50, v: Math.max(8, power * 0.8 + 7)}); 
+                power = 0; 
+                isPressing = false; 
+            } 
+        });
+
         function update() {
             if(!gameActive) return;
             ctx.clearRect(0,0,canvas.width,canvas.height);
-            if(isPressing) power = Math.min(power + 0.7, 20);
+
+            // パワーチャージ（長押し中）
+            if(isPressing) power = Math.min(power + 0.6, 25);
+
+            // 矢の移動と描画
             for(let i = arrows.length - 1; i >= 0; i--) {
-                let a = arrows[i]; a.y -= a.v; ctx.fillStyle = "black"; ctx.fillRect(a.x-2, a.y, 4, 15);
-                if(a.y < 0) arrows.splice(i,1);
+                let a = arrows[i]; 
+                a.y -= a.v; 
+                ctx.fillStyle = "#333"; 
+                ctx.fillRect(a.x - 2, a.y, 4, 20);
+                // 矢じり
+                ctx.beginPath();
+                ctx.moveTo(a.x - 5, a.y);
+                ctx.lineTo(a.x + 5, a.y);
+                ctx.lineTo(a.x, a.y - 10);
+                ctx.fill();
+
+                if(a.y < -20) arrows.splice(i,1);
             }
+
+            // ターゲットの移動と描画
             for(let j = targets.length - 1; j >= 0; j--) {
-                let t = targets[j]; t.y += t.s; ctx.fillStyle = "red"; ctx.beginPath(); ctx.arc(t.x, t.y, 18, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(t.x, t.y, 10, 0, Math.PI*2); ctx.fill();
+                let t = targets[j]; 
+                t.y += t.s; 
+                
+                // 的の描画（ダブルリング）
+                ctx.fillStyle = "#f44336"; ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(t.x, t.y, t.r * 0.6, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "#f44336"; ctx.beginPath(); ctx.arc(t.x, t.y, t.r * 0.2, 0, Math.PI*2); ctx.fill();
+
+                // 当たり判定
                 for(let i = arrows.length - 1; i >= 0; i--) {
-                    if(Math.hypot(arrows[i].x-t.x, arrows[i].y-t.y) < 25) { targets.splice(j,1); arrows.splice(i,1); score++; break; }
+                    let a = arrows[i];
+                    if(Math.hypot(a.x - t.x, a.y - t.y) < t.r + 5) { 
+                        targets.splice(j,1); 
+                        arrows.splice(i,1); 
+                        score++; 
+                        break; 
+                    }
                 }
-                if(t && t.y > canvas.height) { gameOver(); return; }
+                
+                // ゲームオーバー判定
+                if(t && t.y > canvas.height + t.r) { 
+                    gameOver(); 
+                    return; 
+                }
             }
-            ctx.fillStyle = "#33691e"; ctx.fillRect(playerX-20, canvas.height-40, 40, 20);
-            ctx.fillStyle = "#33691e"; ctx.font = "bold 20px sans-serif"; ctx.fillText("SCORE: "+score, 20, 35);
-            ctx.fillStyle = "#ddd"; ctx.fillRect(20, 50, 200, 10); ctx.fillStyle = "orange"; ctx.fillRect(20, 50, power*10, 10);
+
+            // プレイヤー（弓の位置）
+            ctx.fillStyle = "#33691e"; 
+            ctx.beginPath();
+            ctx.roundRect(playerX - 25, canvas.height - 40, 50, 15, 5);
+            ctx.fill();
+
+            // UI描画
+            ctx.fillStyle = "#33691e"; ctx.font = "bold 24px sans-serif"; 
+            ctx.textAlign = "center";
+            ctx.fillText("SCORE: " + score, canvas.width/2, 130);
+
+            // パワーゲージ
+            ctx.fillStyle = "rgba(0,0,0,0.1)"; 
+            ctx.fillRect(canvas.width/2 - 75, 145, 150, 12); 
+            ctx.fillStyle = "orange"; 
+            ctx.fillRect(canvas.width/2 - 75, 145, (power/25) * 150, 12);
+
             requestAnimationFrame(update);
         }
+
         function gameOver() {
-            gameActive = false; clearTimeout(targetSpawnTimer);
-            if(score > bestScore) { bestScore = score; localStorage.setItem("slime_archer_best", bestScore); bestUi.innerText = bestScore; }
-            menuTitle.innerText = "GAME OVER"; menuTitle.style.color = "#f44336"; menuMsg.innerText = "SCORE: " + score; goButton.innerText = "RETRY";
-            btnGroup.style.opacity = "0"; btnGroup.style.pointerEvents = "none"; adMid.style.display = "flex"; menuScreen.style.display = "flex";
-            setTimeout(() => { btnGroup.style.opacity = "1"; btnGroup.style.pointerEvents = "auto"; }, 600);
+            gameActive = false; 
+            clearTimeout(targetSpawnTimer);
+            playCount++;
+
+            if(score > bestScore) { 
+                bestScore = score; 
+                localStorage.setItem("slime_archer_best", bestScore); 
+                bestUi.innerText = bestScore; 
+            }
+
+            menuTitle.innerText = "GAME OVER"; 
+            menuTitle.style.color = "#f44336"; 
+            menuMsg.innerHTML = "RESULT: " + score; 
+            goButton.innerText = "お待ちください...";
+            goButton.disabled = true;
+
+            adMid.style.display = "flex"; 
+            menuScreen.style.display = "flex";
+
+            setTimeout(() => { 
+                goButton.disabled = false; 
+                goButton.innerText = "RETRY GAME"; 
+            }, 1500);
+
+            if(playCount % 3 === 0) setTimeout(showInterAd, 600);
         }
-        setInterval(() => { document.querySelectorAll('iframe').forEach(f => { const s = f.src; f.src = "about:blank"; setTimeout(() => f.src = s, 100); }); }, 30000);
+
+        function showInterAd() {
+            const screen = document.getElementById("inter-screen"), 
+                  closeBtn = document.getElementById("close-ad-btn"), 
+                  ifr = document.getElementById('ifr-inter');
+            ifr.src = './ad.large.html?v=' + Date.now();
+            screen.style.display = "flex";
+            let count = 5;
+            closeBtn.innerText = count;
+            closeBtn.style.pointerEvents = "none";
+            const itv = setInterval(() => {
+                count--;
+                if(count > 0) closeBtn.innerText = count;
+                else {
+                    clearInterval(itv);
+                    closeBtn.innerText = "×";
+                    closeBtn.style.pointerEvents = "auto";
+                }
+            }, 1000);
+        }
+
+        function closeInterAd() {
+            document.getElementById("inter-screen").style.display = "none";
+            document.getElementById('ifr-inter').src = 'about:blank';
+        }
     </script>
 </body>
 </html>
